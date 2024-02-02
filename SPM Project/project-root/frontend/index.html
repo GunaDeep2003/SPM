@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Action Detection</title>
+    <style>
+        /* Add your custom CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        #imageContainer {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #uploadedImage {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Action Detection</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" id="uploadInput">
+        <button type="submit">Analyze Image</button>
+    </form>
+    <div id="imageContainer" style="display: none;">
+        <img id="uploadedImage" src="" alt="Uploaded Image">
+        <p id="analysisResult"></p>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            analyzeImage();
+        });
+
+        function analyzeImage() {
+            const fileInput = document.getElementById('uploadInput');
+            const file = fileInput.files[0];
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/analyze', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayAnalysisResult(data.result);
+            })
+            .catch(error => {
+                console.error('Error analyzing image:', error);
+            });
+        }
+
+        function displayAnalysisResult(result) {
+            const imageContainer = document.getElementById('imageContainer');
+            const uploadedImage = document.getElementById('uploadedImage');
+            const analysisResult = document.getElementById('analysisResult');
+
+            uploadedImage.src = URL.createObjectURL(fileInput.files[0]);
+            imageContainer.style.display = 'block';
+            analysisResult.textContent = 'Action detected: ' + result;
+        }
+    </script>
+</body>
+</html>
